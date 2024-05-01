@@ -7,7 +7,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class UploadPictureScreen extends StatefulWidget {
-  const UploadPictureScreen({super.key});
+  final String userId;
+  const UploadPictureScreen(this.userId, {super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -29,9 +30,8 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
   Future<void> _uploadImageToFirebase() async {
     if (_imageFile == null) return;
 
-    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
     firebase_storage.Reference ref =
-        firebase_storage.FirebaseStorage.instance.ref().child(fileName);
+        firebase_storage.FirebaseStorage.instance.ref().child(widget.userId);
 
     firebase_storage.UploadTask uploadTask =
         ref.putFile(File(_imageFile!.path));
@@ -44,7 +44,7 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
   }
 
   @override
-  final user = FirebaseAuth.instance.currentUser!;
+  // final user = FirebaseAuth.instance.currentUser!;
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

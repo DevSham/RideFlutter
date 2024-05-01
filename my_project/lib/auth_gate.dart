@@ -17,7 +17,9 @@ class AuthGate extends StatelessWidget {
           return SignInScreen(
             providers: [
               EmailAuthProvider(),
-              GoogleProvider(clientId: "429807139023-a2mqee2qfac9no12d2da64nvsc36fqqq.apps.googleusercontent.com"),  // new
+              GoogleProvider(
+                  clientId:
+                      "429807139023-a2mqee2qfac9no12d2da64nvsc36fqqq.apps.googleusercontent.com"), // new
             ],
             headerBuilder: (context, constraints, shrinkOffset) {
               return Padding(
@@ -57,7 +59,7 @@ class AuthGate extends StatelessWidget {
           );
         }
 
-        return const HomeScreen();
+        return HomeScreen(user: snapshot.data!.uid);
       },
     );
   }

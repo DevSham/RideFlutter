@@ -7,12 +7,16 @@ class LoginScreen extends StatelessWidget {
 
   void _login(BuildContext context) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
       );
       // Navigate to home screen or any other screen after successful login
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/home', arguments: {
+        'user': userCredential.user?.uid,
+        // Add more parameters as needed
+      });
     } catch (e) {
       // Handle login errors (e.g., display error message)
       print("Login failed: $e");

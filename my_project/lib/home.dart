@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:my_project/display_image_screen.dart';
@@ -5,44 +6,61 @@ import 'picture_upload_screen.dart';
 import 'gps_location_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final dynamic user;
+  const HomeScreen({super.key, this.user});
 
   @override
   Widget build(BuildContext context) {
+    late Future<String?> _photoUrlFuture;
+    // Fetch the user's photo URL from Firebase Storage using the user's UID
+    firebase_storage.Reference storageRef =
+        firebase_storage.FirebaseStorage.instance.ref().child('${user}');
+    _photoUrlFuture = storageRef.getDownloadURL();
     return Scaffold(
       appBar: AppBar(
         actions: [
-          const CustomImageAvatar(), // Add the custom image avatar widget here
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<ProfileScreen>(
-                  builder: (context) => ProfileScreen(
-                    appBar: AppBar(
-                      title: const Text('User Profile'),
-                    ),
-                    actions: [
-                      SignedOutAction((context) {
-                        Navigator.of(context).pop();
-                      })
-                    ],
-                    children: [
-                      const Divider(),
-                      Padding(
-                        padding: const EdgeInsets.all(2),
-                        child: AspectRatio(
-                          aspectRatio: 1,
-                          child: Image.asset('assets/ridelink.png'),
-                        ),
-                      ),
-                    ],
-                  ),
+          FutureBuilder<String?>(
+            future: _photoUrlFuture,
+            builder: (context, snapshot) {
+              final userPhotoUrl = snapshot.data;
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<ProfileScreen>(
+                        builder: (context) => ProfileScreen(
+                              appBar: AppBar(
+                                title: const Text('User Profile'),
+                              ),
+                              actions: [
+                                SignedOutAction((context) {
+                                  Navigator.of(context).pop();
+                                })
+                              ],
+                              avatar: FutureBuilder<String?>(
+                                future: _photoUrlFuture,
+                                builder: (context, snapshot) {
+                                  final userPhotoUrl = snapshot.data;
+                                  return CircleAvatar(
+                                    backgroundImage: userPhotoUrl != null
+                                        ? NetworkImage(userPhotoUrl)
+                                        : const NetworkImage(
+                                            'https://avatar.iran.liara.run/public/boy?username=Ash'),
+                                  );
+                                },
+                              ),
+                            )),
+                  );
+                },
+                child: CircleAvatar(
+                  backgroundImage: userPhotoUrl != null
+                      ? NetworkImage(userPhotoUrl!)
+                      : const NetworkImage(
+                          'https://avatar.iran.liara.run/public/boy?username=Ash'),
                 ),
               );
             },
-          )
+          ),
         ],
         automaticallyImplyLeading: false,
       ),
@@ -53,28 +71,9 @@ class HomeScreen extends StatelessWidget {
             SizedBox(
               width: 200, // Adjust width as needed
               height: 200, // Adjust height as needed
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ImageDisplayScreen(
-                        imageUrl:
-                            'https://firebasestorage.googleapis.com/v0/b/gs:/myproject-93415.appspot.com/o/?alt=media',
-                      ),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Image.asset(
-                  'assets/ridelinkTruck.jpeg',
-                  fit: BoxFit.cover,
-                ),
+              child: Image.asset(
+                'assets/ridelinkTruck.jpeg',
+                fit: BoxFit.cover,
               ),
             ),
             const SizedBox(height: 20),
@@ -103,8 +102,7 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        const UploadPictureScreen(), // Replace UploadPictureScreen with the actual screen widget
+                    builder: (context) => UploadPictureScreen(user),
                   ),
                 );
               },
