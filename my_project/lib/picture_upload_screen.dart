@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -43,6 +44,7 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
   }
 
   @override
+  final user = FirebaseAuth.instance.currentUser!;
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -73,9 +75,18 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
             ),
             const SizedBox(height: 20),
             _imageUrl != null
-                ? Text(
-                    'Image URL: $_imageUrl',
-                    style: const TextStyle(fontSize: 16),
+                ? Column(
+                    children: [
+                      const Text(
+                        'Image Uploaded Successfully',
+                        style: TextStyle(fontSize: 16, color: Colors.green),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Image URL: $_imageUrl',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
                   )
                 : Container(),
           ],

@@ -1,55 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:my_project/display_image_screen.dart';
 import 'picture_upload_screen.dart';
 import 'gps_location_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
+      appBar: AppBar(
         actions: [
-        IconButton(
-        icon: const Icon(Icons.person),
-    onPressed: () {
-    Navigator.push(
-    context,
-    MaterialPageRoute
-    <ProfileScreen>(
-      builder: (context) => ProfileScreen(
-        appBar: AppBar(
-          title: const Text('User Profile'),
-        ),
-        actions: [
-          SignedOutAction((context) {
-            Navigator.of(context).pop();
-          })
+          const CustomImageAvatar(), // Add the custom image avatar widget here
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute<ProfileScreen>(
+                  builder: (context) => ProfileScreen(
+                    appBar: AppBar(
+                      title: const Text('User Profile'),
+                    ),
+                    actions: [
+                      SignedOutAction((context) {
+                        Navigator.of(context).pop();
+                      })
+                    ],
+                    children: [
+                      const Divider(),
+                      Padding(
+                        padding: const EdgeInsets.all(2),
+                        child: AspectRatio(
+                          aspectRatio: 1,
+                          child: Image.asset('assets/ridelink.png'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          )
         ],
-        children: [
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(2),
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: Image.asset('assets/ridelink.png'),
-            ),
-          ),
-        ],
+        automaticallyImplyLeading: false,
       ),
-    ),
-    );
-    },
-        )
-        ],
-          automaticallyImplyLeading: false,
-        ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/ridelinkTruck.jpeg'),
+            SizedBox(
+              width: 200, // Adjust width as needed
+              height: 200, // Adjust height as needed
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ImageDisplayScreen(
+                        imageUrl:
+                            'https://firebasestorage.googleapis.com/v0/b/gs:/myproject-93415.appspot.com/o/?alt=media',
+                      ),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Image.asset(
+                  'assets/ridelinkTruck.jpeg',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
             const SizedBox(height: 20),
             Text(
               'Welcome!',
@@ -62,11 +89,12 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MapScreen(), // Replace MapScreen with the actual screen widget
+                    builder: (context) =>
+                        const MapScreen(), // Replace MapScreen with the actual screen widget
                   ),
                 );
               },
-              child: Text('Go to Map'),
+              child: const Text('Go to Map'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -75,16 +103,33 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => UploadPictureScreen(), // Replace UploadPictureScreen with the actual screen widget
+                    builder: (context) =>
+                        const UploadPictureScreen(), // Replace UploadPictureScreen with the actual screen widget
                   ),
                 );
               },
-              child: Text('Upload Picture'),
+              child: const Text('Upload Picture'),
             ),
             const SizedBox(height: 20),
-            SignOutButton(),
+            const SignOutButton(),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class CustomImageAvatar extends StatelessWidget {
+  const CustomImageAvatar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: CircleAvatar(
+        backgroundColor: Colors.transparent,
+        backgroundImage: AssetImage('assets/your-custom-image.png'),
+        radius: 20,
       ),
     );
   }
